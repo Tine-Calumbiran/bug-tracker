@@ -7,16 +7,18 @@ pipeline {
     }
 
     environment {
-        GOCACHE = "/tmp/go-build"
+        GOCACHE    = "/tmp/go-build"
+        GOMODCACHE = "/tmp/go-mod"
     }
 
     stages {
         stage('Build') {
-            steps { 
+            steps {
                 dir('bugtracker-backend') {
                     sh '''
-                        mkdir -p $GOCACHE
+                        mkdir -p $GOCACHE $GOMODCACHE
                         go env GOCACHE
+                        go env GOMODCACHE
                         go build ./...
                     '''
                 }
@@ -27,8 +29,7 @@ pipeline {
             steps {
                 dir('bugtracker-backend') {
                     sh '''
-                        mkdir -p $GOCACHE
-                        go env GOCACHE
+                        mkdir -p $GOCACHE $GOMODCACHE
                         go test -v ./...
                     '''
                 }
