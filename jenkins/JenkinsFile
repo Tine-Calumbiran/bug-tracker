@@ -12,12 +12,14 @@ pipeline {
 
     stages {
         stage('Build') {
-            steps {
-                sh '''
-                    mkdir -p $GOCACHE
-                    go env GOCACHE
-                    go build ./...
-                '''
+            steps { 
+                dir('bugtracker-backend') {
+                    sh '''
+                        mkdir -p $GOCACHE
+                        go env GOCACHE
+                        go build ./...
+                    '''
+                }
             }
         }
 
