@@ -1,17 +1,39 @@
 pipeline {
     agent any
 
+    environment {
+        GOCACHE = "${WORKSPACE}/.cache/go-build"
+    }
+
     stages {
+        stage('Build') {
+            steps {
+                sh '''
+                    mkdir -p $GOCACHE
+                    go build ./...
+                '''
+            }
+        }
+
         stage('Unit Tests - Backend') {
-            agent{
-                docker{
+            agent {
+                docker {
                     image 'snakee/golang-junit:1.21'
                     reuseNode true
                 }
             }
+
+            environment {
+                GOCACHE = "/tmp/go-build"
+            }
+
             steps {
-                dir('bugtracker-backend'){
-                    sh 'go test -v ./...'
+                dir('bugtracker-backend') {
+                    sh '''
+                        mkdir -p $GOCACHE
+                        go env GOCACHE
+                        go test -v ./...
+                    '''
                 }
             }
         }
