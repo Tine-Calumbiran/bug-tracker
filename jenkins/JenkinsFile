@@ -19,7 +19,7 @@ pipeline {
                     sh '''
                         mkdir -p $GOCACHE $GOMODCACHE
                         go build ./...
-                        go test -v ./... 2>&1 | go-junit-report > bugtracker-backend/test-results.xml
+                        go test -v ./... 2>&1 | go-junit-report > test-results.xml
                     '''
                 }
             }
