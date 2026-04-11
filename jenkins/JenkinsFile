@@ -39,13 +39,12 @@ pipeline {
                         npm test
                     '''
                 }
-
-                post{
+            }
+             post{
                     always{
                         junit 'bugtracker-frontend/test-results.xml'
                     }
                 }
-            }
         }
     }
 }
