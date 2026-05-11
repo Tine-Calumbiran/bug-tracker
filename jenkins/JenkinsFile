@@ -2,18 +2,18 @@ pipeline {
     agent none 
 
     environment {
-        GOCACHE    = "/tmp/go-build"
-        GOMODCACHE = "/tmp/go-mod"
+        GOCACHE    = "${WORKSPACE}/.go-build"
+        GOMODCACHE = "${WORKSPACE}/.go-mod"
     }
 
     stages {
         stage('Execute Unit Tests'){
-            parallel{
+            parallel {
                 stage('Unit Tests - Backend') {
                     agent {
                         docker {
                             image 'snakee/golang-junit:1.21'
-                             reuseNode true
+                            reuseNode true
                         }
                     }
                     steps {
@@ -21,9 +21,7 @@ pipeline {
                             sh '''
                                 mkdir -p $GOCACHE $GOMODCACHE
                                 go build ./...
-                                # Pipe output to junit report
                                 go test -v ./... 2>&1 | go-junit-report > test-results.xml
-                                # Generate a coverage report
                                 go test -coverprofile=coverage.out -covermode=atomic ./...
                                 go tool cover -html=coverage.out -o coverage.html
 
@@ -32,8 +30,8 @@ pipeline {
                             '''
                         }
                     }
-                    post{
-                        always{
+                    post {
+                        always {
                             junit 'bugtracker-backend/test-results.xml'
                             publishHTML(target: [
                                 allowMissing: false,
@@ -43,6 +41,7 @@ pipeline {
                                 reportFiles: 'coverage.html',
                                 reportName: 'Backend Coverage Report'
                             ])
+                            cleanWs() // Cleanup happens here while the agent is still active
                         }
                     }
                 }
@@ -58,34 +57,32 @@ pipeline {
                         dir('bugtracker-frontend') {
                             sh '''
                                 npm ci
-                                npm test
-
+                                npm test -- --watchAll=false
+                                
+                                # Use -f and move correctly to avoiding "directory not empty" errors
                                 mkdir -p reports
+                                rm -rf reports/coverage
                                 mv coverage reports/
                             '''
                         }
                     }
-                    post{
-                        always{
+                    post {
+                        always {
                             junit 'bugtracker-frontend/test-results.xml'
                             publishHTML(target: [
-                            allowMissing: false,
+                                allowMissing: false,
                                 alwaysLinkToLastBuild: true,
                                 keepAll: true,
-                                // Point to the actual folder Jest creates by default
                                 reportDir: 'bugtracker-frontend/reports/coverage',
                                 reportFiles: 'index.html',
                                 reportName: 'Frontend Coverage Report'
                             ])
+                            cleanWs() // Cleanup happens here while the agent is still active
                         }
                     }
                 }
             }
         }
     }
-    post{
-        always{
-            cleanWs()
-        }
-    }
+    // REMOVED the global post { cleanWs() } because it has no node context
 }
