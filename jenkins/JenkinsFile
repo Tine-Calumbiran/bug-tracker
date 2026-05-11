@@ -60,7 +60,7 @@ pipeline {
                         npm test
 
                         mkdir -p reports
-                        mv coverage.html reports/
+                        mv coverage reports/
                     '''
                 }
             }
@@ -72,7 +72,7 @@ pipeline {
                             alwaysLinkToLastBuild: true,
                             keepAll: true,
                             // Point to the actual folder Jest creates by default
-                            reportDir: 'bugtracker-frontend/coverage/lcov-report',
+                            reportDir: 'bugtracker-frontend/reports/coverage',
                             reportFiles: 'index.html',
                             reportName: 'Frontend Coverage Report'
                         ])
