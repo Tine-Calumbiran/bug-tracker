@@ -19,13 +19,13 @@ pipeline {
                     sh '''
                         mkdir -p $GOCACHE $GOMODCACHE
                         go build ./...
+                        # Pipe output to junit report
                         go test -v ./... 2>&1 | go-junit-report > test-results.xml
 
-                        // Generate a coverage report
-                        go test -coverprofile=coverage.out -covermode=atomic
+                        # Generate a coverage report
+                        go test -coverprofile=coverage.out -covermode=atomic ./...
                         go tool cover -html=coverage.out -o coverage.html
 
-                        // Move
                         mkdir -p reports
                         mv coverage.html reports/
                     '''
@@ -35,9 +35,9 @@ pipeline {
                     always{
                         junit 'bugtracker-backend/test-results.xml'
                         publishHTML targets:[
-                            reportDir: bug-tracker/reports
-                            reportFiles: coverage.html
-                            reportName: Backend Coverage Report
+                            reportDir: 'bug-tracker/reports',
+                            reportFiles: 'coverage.html',
+                            reportName: 'Backend Coverage Report'
                         ]
                     }
             }
