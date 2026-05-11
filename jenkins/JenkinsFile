@@ -71,7 +71,8 @@ pipeline {
                             allowMissing: false,
                             alwaysLinkToLastBuild: true,
                             keepAll: true,
-                            reportDir: 'bugtracker-frontend/reports/coverage',
+                            // Point to the actual folder Jest creates by default
+                            reportDir: 'bugtracker-frontend/coverage/lcov-report',
                             reportFiles: 'index.html',
                             reportName: 'Frontend Coverage Report'
                         ])
