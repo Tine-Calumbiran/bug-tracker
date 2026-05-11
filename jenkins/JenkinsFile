@@ -2,8 +2,8 @@ pipeline {
     agent none 
 
     environment {
-        GOCACHE    = "${WORKSPACE}/.go-build"
-        GOMODCACHE = "${WORKSPACE}/.go-mod"
+        GOCACHE    = "/tmp/go-build"
+        GOMODCACHE = "/tmp/go-mod"
     }
 
     stages {
