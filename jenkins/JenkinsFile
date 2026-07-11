@@ -99,23 +99,25 @@ pipeline {
         stage('API Tests'){
             agent{
                 docker{
-                    image 'mcr.microsoft.com/playwright:v1.50.0-noble'
+                    image 'mcr.microsoft.com/playwright:v1.50.0'
                     reuseNode true
                     args '-u 0 --network=host'
                 }
             }
             steps{
+                dir('tests-api') {
                     sh '''
-						npm ci
+                        npm ci
                         # Start the application in the background
                         npm run start &
-                
+
                         # Wait for the application to be fully up and healthy
-                        npx wait-port <http://localhost:8080/api/health> -t 30000
-                
+                        npx wait-port http://localhost:8080/api/health -t 30000
+
                         # Execute the test suite
                         npx playwright test
-		            '''
+                    '''
+                }
             }
             post{
                 always{
