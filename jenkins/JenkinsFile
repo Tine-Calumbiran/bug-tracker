@@ -91,9 +91,6 @@ pipeline {
                     args '-v /var/run/docker.sock:/var/run/docker.sock -u 0'
                 }
             }
-            environment {
-                DOCKER_HOST = ''
-            }
             steps{
                 sh 'docker compose up --build -d'
             }
